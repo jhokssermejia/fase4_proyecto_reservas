@@ -1,1 +1,4 @@
 [2026-04-19 17:32:47.141562] Inicio de simulación de 10 operaciones.
+[2026-04-21 16:16:50.119503] Inicio de simulación de 10 operaciones.
+[2026-04-21 16:16:58.411297] Inicio de simulación de 10 operaciones.
+[2026-04-21 16:23:00.488207] Inicio de simulación de 10 operaciones.
