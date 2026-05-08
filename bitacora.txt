@@ -4,3 +4,5 @@
 [2026-04-21 16:23:00.488207] Inicio de simulación de 10 operaciones.
 [2026-05-08 09:14:06.446885] Inicio de simulación de 10 operaciones.
 [2026-05-08 09:14:51.666191] Inicio de simulación de 10 operaciones.
+[2026-05-08 12:18:02] INFO - Cliente registrado exitosamente: 102
+[2026-05-08 12:18:10] INFO - Inicio de simulaci�n de 10 operaciones.
