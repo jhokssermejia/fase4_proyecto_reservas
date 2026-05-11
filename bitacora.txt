@@ -6,3 +6,21 @@
 [2026-05-08 09:14:51.666191] Inicio de simulación de 10 operaciones.
 [2026-05-08 12:18:02] INFO - Cliente registrado exitosamente: 102
 [2026-05-08 12:18:10] INFO - Inicio de simulaci�n de 10 operaciones.
+[2026-05-11 18:29:32.310311] Cliente registrado correctamente: 15
+[2026-05-11 18:29:32.310311] Fin de intento de registro
+[2026-05-11 18:29:36.297723] Iniciando simulador robusto.
+[2026-05-11 18:29:36.299066] Proceso de reserva finalizado
+[2026-05-11 18:29:36.299368] Proceso de reserva finalizado
+[2026-05-11 18:29:36.299368] Proceso de reserva finalizado
+[2026-05-11 18:29:36.299368] Proceso de reserva finalizado
+[2026-05-11 18:29:36.300418] Error registrando cliente 5050: El nombre solo debe contener letras
+[2026-05-11 18:29:36.300418] Fin de intento de registro
+[2026-05-11 18:29:36.301416] Error registrando cliente 6060: El nombre solo debe contener letras
+[2026-05-11 18:29:36.302415] Fin de intento de registro
+[2026-05-11 18:29:36.302415] Error registrando cliente 7070: El nombre solo debe contener letras
+[2026-05-11 18:29:36.302415] Fin de intento de registro
+[2026-05-11 18:29:36.303920] Error registrando cliente 8080: El nombre solo debe contener letras
+[2026-05-11 18:29:36.303920] Fin de intento de registro
+[2026-05-11 18:29:36.303920] Error registrando cliente 9090: El nombre solo debe contener letras
+[2026-05-11 18:29:36.305146] Fin de intento de registro
+[2026-05-11 18:29:36.305763] Simulación finalizada exitosamente.
