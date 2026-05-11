@@ -253,3 +253,64 @@
 [2026-05-11 15:19:26.118043] Proceso de reserva finalizado
 [2026-05-11 15:19:26.118231] Proceso de reserva finalizado
 [2026-05-11 15:19:26.118423] Fin de simulación de 10 operaciones.
+[2026-05-11 17:05:14.612975] Error registrando cliente Mejía: El documento debe contener solo números
+[2026-05-11 17:05:14.613972] Fin de intento de registro
+[2026-05-11 17:05:25.446854] Error registrando cliente 106: El teléfono debe contener solo números
+[2026-05-11 17:05:25.446854] Fin de intento de registro
+[2026-05-11 17:05:33.425205] Cliente registrado correctamente: 106
+[2026-05-11 17:05:33.425205] Fin de intento de registro
+[2026-05-11 17:05:43.604885] Inicio de simulación de 10 operaciones.
+[2026-05-11 17:05:43.605895] Proceso de reserva finalizado
+[2026-05-11 17:05:43.605895] Proceso de reserva finalizado
+[2026-05-11 17:05:43.606894] Cliente registrado correctamente: 0000
+[2026-05-11 17:05:43.606894] Fin de intento de registro
+[2026-05-11 17:05:43.606894] Proceso de reserva finalizado
+[2026-05-11 17:05:43.608270] Proceso de reserva finalizado
+[2026-05-11 17:05:43.609278] Proceso de reserva finalizado
+[2026-05-11 17:05:43.609278] Cliente registrado correctamente: 1234
+[2026-05-11 17:05:43.610178] Fin de intento de registro
+[2026-05-11 17:05:43.610491] Proceso de reserva finalizado
+[2026-05-11 17:05:43.610491] Proceso de reserva finalizado
+[2026-05-11 17:05:43.611493] Cliente registrado correctamente: 5555
+[2026-05-11 17:05:43.611493] Fin de intento de registro
+[2026-05-11 17:05:43.611493] Proceso de reserva finalizado
+[2026-05-11 17:05:43.612563] Cliente registrado correctamente: 6666
+[2026-05-11 17:05:43.612563] Fin de intento de registro
+[2026-05-11 17:05:43.612563] Proceso de reserva finalizado
+[2026-05-11 17:05:43.613569] Cliente registrado correctamente: 7777
+[2026-05-11 17:05:43.613569] Fin de intento de registro
+[2026-05-11 17:05:43.613569] Proceso de reserva finalizado
+[2026-05-11 17:05:43.614568] Fin de simulación de 10 operaciones.
+[2026-05-11 17:14:32.761684] Error registrando cliente 1032: El nombre solo debe contener letras
+[2026-05-11 17:14:32.761684] Fin de intento de registro
+[2026-05-11 17:14:39.255904] Cliente registrado correctamente: 1032
+[2026-05-11 17:14:39.256987] Fin de intento de registro
+[2026-05-11 17:16:27.108740] Ejecutando simulación de carga...
+[2026-05-11 17:16:27.108740] Proceso de reserva finalizado
+[2026-05-11 17:16:27.108740] Proceso de reserva finalizado
+[2026-05-11 17:16:27.109903] Proceso de reserva finalizado
+[2026-05-11 17:16:27.109903] Proceso de reserva finalizado
+[2026-05-11 17:16:27.110922] Cliente registrado correctamente: 1234
+[2026-05-11 17:16:27.110922] Fin de intento de registro
+[2026-05-11 17:16:27.111905] Proceso de reserva finalizado
+[2026-05-11 17:16:27.111905] Cliente registrado correctamente: 5555
+[2026-05-11 17:16:27.112906] Fin de intento de registro
+[2026-05-11 17:16:27.112906] Proceso de reserva finalizado
+[2026-05-11 17:38:32.436138] Cliente registrado correctamente: 1010101010
+[2026-05-11 17:38:32.436138] Fin de intento de registro
+[2026-05-11 17:38:38.587453] Iniciando simulador robusto.
+[2026-05-11 17:38:38.587453] Proceso de reserva finalizado
+[2026-05-11 17:38:38.587453] Proceso de reserva finalizado
+[2026-05-11 17:38:38.587453] Proceso de reserva finalizado
+[2026-05-11 17:38:38.588712] Proceso de reserva finalizado
+[2026-05-11 17:38:38.588712] Error registrando cliente 5050: El nombre solo debe contener letras
+[2026-05-11 17:38:38.589712] Fin de intento de registro
+[2026-05-11 17:38:38.589712] Error registrando cliente 6060: El nombre solo debe contener letras
+[2026-05-11 17:38:38.590713] Fin de intento de registro
+[2026-05-11 17:38:38.590713] Error registrando cliente 7070: El nombre solo debe contener letras
+[2026-05-11 17:38:38.590713] Fin de intento de registro
+[2026-05-11 17:38:38.591714] Error registrando cliente 8080: El nombre solo debe contener letras
+[2026-05-11 17:38:38.591714] Fin de intento de registro
+[2026-05-11 17:38:38.591714] Error registrando cliente 9090: El nombre solo debe contener letras
+[2026-05-11 17:38:38.592713] Fin de intento de registro
+[2026-05-11 17:38:38.592713] Simulación finalizada exitosamente.
