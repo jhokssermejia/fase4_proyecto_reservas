@@ -1,160 +1,190 @@
 import tkinter as tk
-from tkinter import messagebox, ttk
-from tkinter.scrolledtext import ScrolledText
+from tkinter import messagebox, scrolledtext
+import logging
 
-# Intentar importar módulos de lógica
-try:
-    from gestor_usuarios import GestorUsuarios
-    from reserva import Reserva
-    from servicios import ReservaSala, AlquilerEquipo, Asesoria
-    from logger import guardar_log
-    from excepciones import ErrorDeNegocio
-except ImportError as e:
-    print(f"Error de dependencias: {e}")
+# Asegúrate de tener estos módulos en el mismo directorio
+from gestor_usuarios import GestorUsuarios
+from servicios import ReservaSala
+from reserva import Reserva
 
-db = GestorUsuarios()
+# Configuración del sistema de logging (Reemplaza a guardar_log manual)
+logging.basicConfig(
+    filename="bitacora.txt",
+    level=logging.INFO,
+    format="[%(asctime)s] %(levelname)s - %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
 
-# --- CONFIGURACIÓN DE ESTILO ---
-COLOR_BG = "#1e1e1e"
-COLOR_CARD = "#2d2d2d"
-COLOR_TEXT = "#e0e0e0"
-COLOR_ACCENT = "#3a7ebf"
-COLOR_ENTRY = "#3d3d3d"
-COLOR_CONSOLE = "#121212"
-COLOR_SUCCESS = "#81c784"
-
-# -------------------------
-# LÓGICA DE INTERFAZ
-# -------------------------
-
-def registrar_cliente():
-    try:
-        n, a, d = e_n.get().strip(), e_a.get().strip(), e_d.get().strip()
-        t, direccion = e_t.get().strip(), e_dir.get().strip()
-
-        if not all([n, a, d, t, direccion]):
-            raise ErrorDeNegocio("Todos los campos son obligatorios.")
+class GestionApp:
+    def __init__(self, root: tk.Tk) -> None:
+        self.root = root
+        self.root.title("Software de Gestión")
+        self.root.geometry("700x550")
+        self.root.configure(bg="black")
         
-        db.registrar(n, a, d, t, direccion)
-        messagebox.showinfo("Éxito", f"Cliente {n} registrado.")
-        limpiar_campos()
-    except ErrorDeNegocio as e:
-        messagebox.showwarning("Atención", str(e))
-    except Exception as e:
-        guardar_log(f"Error: {e}")
-        messagebox.showerror("Error", "Fallo interno en el registro.")
+        # Inicializar gestor
+        self.db = GestorUsuarios()
 
-def limpiar_campos():
-    for e in [e_n, e_a, e_d, e_t, e_dir]: e.delete(0, tk.END)
+        # Estilos compartidos (Diccionarios para reutilización)
+        self.estilo_btn = {
+            "bg": "#333333", "fg": "white", 
+            "font": ("Arial", 11, "bold"), 
+            "relief": tk.FLAT, "width": 25
+        }
+        self.estilo_lbl = {"bg": "black", "fg": "white", "font": ("Arial", 12)}
 
-def ver_clientes():
-    salida.delete("1.0", tk.END)
-    salida.insert(tk.END, f"{'DOC':<12} | {'NOMBRE COMPLETO':<25} | {'TELÉFONO':<12}\n")
-    salida.insert(tk.END, "-" * 60 + "\n")
-    for c in db.obtener_todos():
-        nombre = f"{c.nombres} {c.apellidos}"
-        salida.insert(tk.END, f"{c.documento_identidad:<12} | {nombre[:25]:<25} | {c.telefono:<12}\n")
+        self._crear_interfaz()
 
-def crear_servicio():
-    tipo = combo_servicio.get()
-    if tipo == "Sala": return ReservaSala("S1", "Sala Central", 40000)
-    if tipo == "Equipo": return AlquilerEquipo("E1", "Video Beam", 60000)
-    return Asesoria("A1", "Asesoría Técnica", 80000)
+    def _crear_interfaz(self) -> None:
+        # --- Frame Superior (Botones) ---
+        frame_botones = tk.Frame(self.root, bg="black")
+        frame_botones.pack(pady=20)
 
-# -------------------------
-# SIMULADOR MEJORADO (10 Registros Ordenados)
-# -------------------------
+        # Título
+        lbl_titulo = tk.Label(
+            frame_botones, text="--- MENÚ PRINCIPAL ---", 
+            font=("Arial", 14, "bold"), bg="black", fg="#00FF00"
+        )
+        lbl_titulo.grid(row=0, column=0, columnspan=2, pady=(0, 15))
 
-def simulacion():
-    salida.delete("1.0", tk.END)
-    guardar_log("Iniciando simulador robusto.")
-    
-    try:
-        servicio_base = crear_servicio()
-        # Lista de 10 documentos para la simulación
-        docs_simulacion = [
-            "1010", "2020", "3030", "ABC_ERR", "4040", 
-            "5050", "6060", "7070", "8080", "9090"
-        ]
+        # Botones
+        btn_nuevo = tk.Button(frame_botones, text="1. NUEVO REGISTRO", command=self.ventana_nuevo_registro, **self.estilo_btn)
+        btn_nuevo.grid(row=1, column=0, padx=10, pady=5)
 
-        header = f"{'N°':<4} | {'ESTADO':<10} | {'DETALLES DE LA OPERACIÓN':<45}\n"
-        salida.insert(tk.END, header)
-        salida.insert(tk.END, "=" * 70 + "\n\n")
+        btn_simulacion = tk.Button(frame_botones, text="2. SIMULACIÓN (10 OP)", command=self.ejecutar_simulacion, **self.estilo_btn)
+        btn_simulacion.grid(row=1, column=1, padx=10, pady=5)
 
-        for i, doc in enumerate(docs_simulacion, 1):
-            try:
-                # Intentar proceso de negocio
-                persona = db.buscar(doc)
-                if not persona:
-                    # Si no existe, lo registramos automáticamente (Simulación de flujo)
-                    if not doc.isalnum(): raise ErrorDeNegocio("Formato inválido")
-                    persona = db.registrar(f"User{i}", "Simulado", doc, "000-000", "Sede Central")
+        btn_ver = tk.Button(frame_botones, text="3. VER CLIENTES", command=self.ver_clientes, **self.estilo_btn)
+        btn_ver.grid(row=2, column=0, padx=10, pady=5)
 
-                res = Reserva(persona, servicio_base)
-                info = res.procesar()
-                
-                # Formato de salida exitosa
-                salida.insert(tk.END, f"{i:02d}   | OK         | Doc:{doc} -> {info}\n")
+        btn_salir = tk.Button(
+            frame_botones, text="4. SALIR", command=self.root.quit, 
+            bg="#770000", fg="white", font=("Arial", 11, "bold"), 
+            relief=tk.FLAT, width=25
+        )
+        btn_salir.grid(row=2, column=1, padx=10, pady=5)
 
-            except ErrorDeNegocio as e:
-                salida.insert(tk.END, f"{i:02d}   | RECHAZADO  | Doc:{doc} -> Error: {e}\n")
-            except Exception as e:
-                salida.insert(tk.END, f"{i:02d}   | CRÍTICO    | Doc:{doc} -> Error inesperado\n")
+        # --- Frame Inferior (Consola de salida) ---
+        frame_consola = tk.Frame(self.root, bg="black")
+        frame_consola.pack(fill=tk.BOTH, expand=True, padx=20, pady=(0, 20))
+
+        lbl_consola = tk.Label(frame_consola, text="Salida del Sistema:", **self.estilo_lbl)
+        lbl_consola.pack(anchor=tk.W)
+
+        self.txt_consola = scrolledtext.ScrolledText(frame_consola, bg="#111111", fg="#00FF00", font=("Consolas", 10))
+        self.txt_consola.pack(fill=tk.BOTH, expand=True)
+        self.escribir_consola("Sistema iniciado correctamente. Esperando instrucciones...")
+
+    def escribir_consola(self, texto: str) -> None:
+        """Añade texto a la caja de salida gráfica."""
+        self.txt_consola.insert(tk.END, f"{texto}\n")
+        self.txt_consola.see(tk.END)  # Autoscroll hacia abajo
+
+    def ventana_nuevo_registro(self) -> None:
+        """Abre una sub-ventana para capturar los datos del cliente."""
+        ventana = tk.Toplevel(self.root)
+        ventana.title("Nuevo Registro")
+        ventana.geometry("380x380") # Ligeramente más ancha para mejor ajuste del grid
+        ventana.configure(bg="black")
+        ventana.grab_set() # Foco a esta ventana
+
+        tk.Label(ventana, text="--- INGRESO DE DATOS ---", **self.estilo_lbl).pack(pady=10)
+
+        # Frame contenedor para el formulario usando grid
+        frame_form = tk.Frame(ventana, bg="black")
+        frame_form.pack(padx=20, pady=5, fill=tk.X)
+
+        entradas = {}
+        campos = ["NOMBRES", "APELLIDOS", "DOCUMENTO", "TELÉFONO", "DIRECCIÓN"]
+
+        for i, campo in enumerate(campos):
+            tk.Label(frame_form, text=f"{campo}:", width=12, anchor=tk.W, **self.estilo_lbl).grid(row=i, column=0, pady=8, sticky="w")
+            entry = tk.Entry(frame_form, bg="#333333", fg="white", insertbackground="white", font=("Arial", 10))
+            entry.grid(row=i, column=1, pady=8, sticky="ew")
+            entradas[campo] = entry
             
-            # Espaciado entre registros para mejor visibilidad
-            salida.insert(tk.END, "-" * 70 + "\n")
+        frame_form.columnconfigure(1, weight=1) # Permite que los Entry se expandan
 
-        salida.insert(tk.END, f"\n[SISTEMA]: Simulación completada. Revise el archivo log para detalles técnicos.")
-        guardar_log("Simulación finalizada exitosamente.")
+        def procesar_registro() -> None:
+            nombres = entradas["NOMBRES"].get()
+            apellidos = entradas["APELLIDOS"].get()
+            documento = entradas["DOCUMENTO"].get()
+            telefono = entradas["TELÉFONO"].get()
+            direccion = entradas["DIRECCIÓN"].get()
 
-    except Exception as e:
-        messagebox.showerror("Error de Simulación", f"No se pudo iniciar el proceso: {e}")
+            try:
+                # Validaciones
+                if not nombres.replace(" ", "").isalpha():
+                    raise ValueError("Los nombres solo deben contener letras.")
+                if not apellidos.replace(" ", "").isalpha():
+                    raise ValueError("Los apellidos solo deben contener letras.")
+                if not documento.isdigit() or len(documento) > 15:
+                    raise ValueError("El documento debe ser numérico y máximo 15 dígitos.")
+                if not telefono.isdigit() or len(telefono) != 10:
+                    raise ValueError("El teléfono debe tener exactamente 10 dígitos.")
+                if not direccion.strip():
+                    raise ValueError("La dirección no puede estar vacía.")
 
-# -------------------------
-# CONSTRUCCIÓN DE LA GUI
-# -------------------------
+                # Registro exitoso
+                self.db.registrar(nombres, apellidos, documento, telefono, direccion)
+                messagebox.showinfo("Éxito", "Cliente registrado con éxito en el sistema.", parent=ventana)
+                self.escribir_consola(f"Nuevo cliente registrado: {documento} - {nombres} {apellidos}")
+                logging.info(f"Cliente registrado exitosamente: {documento}")
+                ventana.destroy()
 
-root = tk.Tk()
-root.title("Sistema de Reservas - Software FJ")
-root.geometry("800x750")
-root.configure(bg=COLOR_BG)
-root.columnconfigure(1, weight=1)
+            except ValueError as e:
+                messagebox.showerror("Error de Validación", str(e), parent=ventana)
+                self.escribir_consola(f"Intento de registro fallido: {e}")
+                logging.warning(f"Error de validación en registro: {e}")
+            except Exception as e:
+                messagebox.showerror("Error Inesperado", str(e), parent=ventana)
+                logging.error(f"Error inesperado en registro: {e}", exc_info=True)
 
-# Estilos ttk
-style = ttk.Style()
-style.theme_use('clam')
-style.configure("TCombobox", fieldbackground=COLOR_ENTRY, background=COLOR_BG, foreground="white")
+        btn_guardar = tk.Button(
+            ventana, text="GUARDAR CLIENTE", command=procesar_registro, 
+            bg="#006600", fg="white", font=("Arial", 10, "bold"), relief=tk.FLAT
+        )
+        btn_guardar.pack(pady=20)
 
-# Labels y Entries con Grid
-fields = [("Nombres:", 0), ("Apellidos:", 1), ("Documento:", 2), ("Teléfono:", 3), ("Dirección:", 4)]
-entries = []
+    def ejecutar_simulacion(self) -> None:
+        """Ejecuta las 10 pruebas y muestra la salida en la consola virtual."""
+        self.escribir_consola("\n--- Ejecutando 10 Pruebas Automáticas ---")
+        logging.info("Inicio de simulación de 10 operaciones.")
+        
+        docs = ["1010", "2020", "0000", "3030", "4040", "1234", "1010", "5555", "6666", "7777"]
+        sala = ReservaSala("S1", "Sala de Espera Central", 40000)
 
-for text, row in fields:
-    tk.Label(root, text=text, bg=COLOR_BG, fg=COLOR_TEXT, font=("Arial", 10, "bold")).grid(row=row, column=0, sticky="e", padx=20, pady=8)
-    en = tk.Entry(root, bg=COLOR_ENTRY, fg="white", insertbackground="white", width=45, relief="flat")
-    en.grid(row=row, column=1, sticky="w", padx=20)
-    entries.append(en)
+        for i, doc in enumerate(docs, 1):
+            try:
+                self.escribir_consola(f"Prueba {i}: Cédula {doc}")
+                persona = self.db.buscar(doc)
+                
+                if not persona:
+                    self.escribir_consola("-> Cliente no existe. Creando uno...")
+                    persona = self.db.registrar("Test", "Prueba", doc, "0000000000", "N/A")
+                
+                res = Reserva(persona, sala, 1)
+                self.escribir_consola(f"-> {res.procesar()}")
+                
+            except Exception as e:
+                logging.error(f"Fallo en prueba {i} con doc {doc}: {e}")
+                self.escribir_consola(f"-> ERROR en prueba {i}. Registrado en bitacora.txt")
 
-e_n, e_a, e_d, e_t, e_dir = entries
+    def ver_clientes(self) -> None:
+        """Lista los clientes registrados en la consola virtual."""
+        self.escribir_consola("\n--- LISTA DE CLIENTES ---")
+        
+        # Nota: Acceder a variables protegidas como _lista o _documento_identidad 
+        # va en contra de los principios de encapsulamiento estricto.
+        # Sería ideal implementar getters en GestorUsuarios y Cliente (ej: self.db.obtener_clientes())
+        if not self.db._lista:
+            self.escribir_consola("No hay clientes registrados aún.")
+            return
 
-tk.Label(root, text="Servicio:", bg=COLOR_BG, fg=COLOR_TEXT, font=("Arial", 10, "bold")).grid(row=5, column=0, sticky="e", padx=20, pady=8)
-combo_servicio = ttk.Combobox(root, values=["Sala", "Equipo", "Asesoría"], state="readonly", width=42)
-combo_servicio.grid(row=5, column=1, sticky="w", padx=20)
-combo_servicio.current(0)
+        for cliente in self.db._lista:
+            self.escribir_consola(f"[{cliente._documento_identidad}] {cliente._nombres} {cliente._apellidos} - Tel: {cliente._telefono}")
 
-# Botonera
-frame_btns = tk.Frame(root, bg=COLOR_BG)
-frame_btns.grid(row=6, column=0, columnspan=2, pady=25)
-
-btn_style = {"font": ("Arial", 9, "bold"), "fg": "white", "width": 18, "relief": "flat", "cursor": "hand2"}
-
-tk.Button(frame_btns, text="Registrar", bg="#2e7d32", command=registrar_cliente, **btn_style).pack(side="left", padx=5)
-tk.Button(frame_btns, text="Listar", bg=COLOR_ACCENT, command=ver_clientes, **btn_style).pack(side="left", padx=5)
-tk.Button(frame_btns, text="Simular (10)", bg="#ef6c00", command=simulacion, **btn_style).pack(side="left", padx=5)
-tk.Button(frame_btns, text="Salir", bg="#c62828", command=root.destroy, **btn_style).pack(side="left", padx=5)
-
-# Pantalla de resultados
-salida = ScrolledText(root, bg=COLOR_CONSOLE, fg=COLOR_SUCCESS, font=("Consolas", 10), width=90, height=18, relief="flat")
-salida.grid(row=7, column=0, columnspan=2, padx=25, pady=10)
-
-root.mainloop()
+if __name__ == "__main__":
+    root = tk.Tk()
+    app = GestionApp(root)
+    root.mainloop()
