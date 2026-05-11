@@ -1,70 +1,63 @@
 from cliente import Cliente
-from excepciones import ErrorDeDocumento
-import datetime
-
-# -------------------------
-# Función para registrar logs
-# # -------------------------
-#  
-def guardar_log(texto):
-    with open("bitacora.txt", "a", encoding="utf-8") as f:
-        f.write(f"[{datetime.datetime.now()}] {texto}\n")
+from excepciones import ErrorDeDocumento, ErrorDeNegocio
+from logger import guardar_log
 
 class GestorUsuarios:
-    def __init__(self):
-        self._lista = []
-        self._precargar()
-
 
     # -------------------------
     # Precarga de datos iniciales
     # -------------------------
 
+    def __init__(self):
+        self._lista = []
+        self._precargar()
+
+
     def _precargar(self):
-        try:
-            self._lista.append(Cliente("John", "Alvarez", "1010", "3000000000", "Anserma"))
-            self._lista.append(Cliente("Leonardo", "Alvarez", "2020", "3100000000", "Anserma"))
-            self._lista.append(Cliente("Cesar", "Giraldo", "3030", "3200000000", "Anserma"))
-            self._lista.append(Cliente("Jenny", "Aricapa", "4040", "3300000000", "Anserma"))
-            guardar_log("Precarga de clientes exitosa")
-        except Exception as e:
-            guardar_log(f"Error precargando datos: {e}")
-
-
-
-    # Buscar cliente por cédula
+        datos = [
+            ("John", "Alvarez", "1010", "3000000000", "Anserma"),
+            ("Leonardo", "Alvarez", "2020", "3100000000", "Anserma"),
+            ("Cesar", "Giraldo", "3030", "3200000000", "Anserma"),
+            ("Jenny", "Aricapa", "4040", "3300000000", "Anserma")
+        ]
+        for d in datos:
+            try:
+                self._lista.append(Cliente(*d))
+            except Exception as e:
+                guardar_log(f"Error precarga cliente {d[2]}: {e}")
     
+    # Buscar cliente por cédula
+
     def buscar(self, cedula):
-        for c in self._lista:
-            if c.documento_identidad == cedula:
-                return c
-        return None
+        return next((c for c in self._lista if c.documento_identidad == cedula), None)
 
-
-
-    # Registrar cliente con manejo avanzado de excepciones
+    def obtener_todos(self):
+        return list(self._lista)
+    
+     # Validar duplicado
 
     def registrar(self, n, a, d, t, dir):
         try:
-            # Validar duplicado
             if self.buscar(d):
-                raise ErrorDeDocumento("El documento ya está registrado")
+                raise ErrorDeDocumento(f"El documento {d} ya está registrado")
 
-            # Intentar crear el cliente
-            nuevo = Cliente(n, a, d, t, dir)
+            cliente = Cliente(n, a, d, t, dir)
+
+
+            # errores de registros 
+
+        except ErrorDeNegocio as e:
+            guardar_log(f"Error registrando cliente {d}: {e}")
+            raise ErrorDeDocumento(f"No se pudo registrar el cliente: {e}")
 
         except Exception as e:
-            # Registrar el error real en la bitácora
-            guardar_log(f"Error registrando cliente {d}: {e}")
-
-            # Re-lanzar el error original para que el GUI lo muestre
-            raise e
+            guardar_log(f"Error inesperado registrando {d}: {e}")
+            raise ErrorDeDocumento("Error inesperado al registrar cliente")
 
         else:
-            # Si todo salió bien, agregar a la lista
-            self._lista.append(nuevo)
+            self._lista.append(cliente)
             guardar_log(f"Cliente registrado correctamente: {d}")
-            return nuevo
+            return cliente
 
         finally:
-            guardar_log("Operación de registro finalizada")
+            guardar_log("Fin de intento de registro")

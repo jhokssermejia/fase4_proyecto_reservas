@@ -2,29 +2,31 @@
 # Por qué está aquí: La guía exige manejar excepciones para que el sistema no muera ante un dato mal ingresado.
 
 class ErrorDeNegocio(Exception):
-    # Base para errores lógicos generales del sistema Software FJ.
+    """Error base para la lógica de negocio."""
     pass
+
 
 class ErrorEnReserva(ErrorDeNegocio):
-    # Se activa si falla la unión entre cliente y servicio.
+    """Errores relacionados con el proceso de reservas."""
     pass
 
-# =================================================================
-# EXCEPCIONES REQUERIDAS POR LA CLASE CLIENTE (Integración)
-# =================================================================
 
 class ErrorDeNombres(ErrorDeNegocio):
-    # Se activa cuando el nombre ingresado está vacío o tiene números
+    """Errores en los nombres del cliente."""
     pass
+
 
 class ErrorDeApellidos(ErrorDeNegocio):
-    # Se activa si el apellido se deja en blanco
+    """Errores en los apellidos del cliente."""
     pass
+
 
 class ErrorDeDocumento(ErrorDeNegocio):
-    # Se lanza si el documento de identidad contiene letras
+    """Errores relacionados con el documento de identidad."""
     pass
 
+
 class ErrorDeTelefono(ErrorDeNegocio):
-    # Se lanza si el teléfono tiene caracteres no numéricos
+    """Errores relacionados con el teléfono."""
     pass
+

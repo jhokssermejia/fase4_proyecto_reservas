@@ -22,8 +22,13 @@ class Cliente:
         # -------------------------
         # VALIDACIÓN DE APELLIDOS
         # -------------------------
-        if not apellidos.strip():
+        apellidos_limpios = apellidos.strip()
+        if not apellidos_limpios:
             raise ErrorDeApellidos("El apellido no puede estar vacío")
+
+        for palabra in apellidos_limpios.split():
+            if not palabra.isalpha():
+                raise ErrorDeApellidos("El apellido solo debe contener letras")
 
         # -------------------------
         # VALIDACIÓN DE DOCUMENTO
@@ -40,8 +45,8 @@ class Cliente:
         # -------------------------
         # ENCAPSULAMIENTO
         # -------------------------
-        self.__nombres = nombres
-        self.__apellidos = apellidos
+        self.__nombres = nombre_limpio
+        self.__apellidos = apellidos_limpios
         self.__documento_identidad = documento_identidad
         self.__telefono = telefono
         self.__direccion = direccion
